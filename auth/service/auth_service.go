@@ -28,7 +28,7 @@ func (a authService) LoginService(user userdomain.User) (string, error) {
 
 	err = checkPassword(user.Password, password)
 	if err != nil {
-		return "", errors.New("email-not-found")
+		return "", errors.New("wrong-cred")
 	}
 
 	return util.GenerateToken(email)

@@ -18,8 +18,8 @@ func (a authRepository) LoginRepository(user userdomain.User) (string, string, e
 	for rows.Next() {
 		rows.Scan(&data.Email, &data.Password)
 	}
-	if data.Password == "" {
-		return "", "", errors.New("email-not-found")
+	if data.Password == "" || data.Email == "" {
+		return "", "", errors.New("not-found-cred")
 	}
 	return data.Email, data.Password, nil
 }
