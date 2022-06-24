@@ -5,14 +5,24 @@ import (
 	"log"
 	"net/http"
 	handler2 "six/auth/handler"
+	"six/auth/repository"
+	service2 "six/auth/service"
+	"six/database"
 	"six/user/handler"
 	"six/user/service"
+	util "six/utils"
 	"time"
 )
 
 func main() {
+	config := util.InitConfig()
+	db, _ := database.InitDatabase(config)
+
 	r := mux.NewRouter()
-	handler2.NewAuthHandler(r)
+	authRepository := repository.NewAuthRepository(db)
+	authService := service2.NewAuthService(authRepository)
+	handler2.NewAuthHandler(r, authService)
+
 	userService := service.NewUserService()
 	handler.NewUserHandler(r, userService)
 
