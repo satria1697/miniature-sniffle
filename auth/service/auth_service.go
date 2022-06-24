@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"six/auth/domain"
 	userdomain "six/user/domain"
@@ -14,8 +13,6 @@ type authService struct {
 }
 
 func checkPassword(password string, dbPassword string) error {
-	fmt.Printf("%v\n", dbPassword)
-	fmt.Printf("%v\n", password)
 	err := bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password))
 	if err != nil {
 		return err
@@ -24,17 +21,17 @@ func checkPassword(password string, dbPassword string) error {
 }
 
 func (a authService) LoginService(user userdomain.User) (string, error) {
-	res, err := a.authRepository.LoginRepository(user)
+	email, password, err := a.authRepository.LoginRepository(user)
 	if err != nil {
 		return "", err
 	}
 
-	err = checkPassword(user.Password, res)
+	err = checkPassword(user.Password, password)
 	if err != nil {
 		return "", errors.New("email-not-found")
 	}
 
-	return util.GenerateToken(res)
+	return util.GenerateToken(email)
 }
 
 func NewAuthService(authRepository domain.AuthRepository) domain.AuthService {

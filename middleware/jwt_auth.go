@@ -2,9 +2,7 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang-jwt/jwt/v4"
-	"log"
 	"net/http"
 	util "six/utils"
 	"strings"
@@ -34,7 +32,6 @@ func Authori() func(handler http.Handler) http.Handler {
 				return []byte("inistringsecretkakak"), nil
 			})
 			if err != nil {
-				log.Printf("%v\n", err)
 				w.Header().Add("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
 				w.Write(util.Response(nil, errors.New("unauthorized")))
@@ -42,8 +39,14 @@ func Authori() func(handler http.Handler) http.Handler {
 			}
 
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				handler.ServeHTTP(w, r)
-				fmt.Printf("%v\n", claims)
+				if claims["email"].(string) != "" {
+					handler.ServeHTTP(w, r)
+					return
+				}
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write(util.Response(nil, errors.New("unauthorized")))
+				return
 			} else {
 				w.Header().Add("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)

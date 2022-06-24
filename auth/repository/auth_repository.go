@@ -11,17 +11,17 @@ type authRepository struct {
 	db *gorm.DB
 }
 
-func (a authRepository) LoginRepository(user userdomain.User) (string, error) {
-	var password string
-	res := a.db.Raw("SELECT password FROM users WHERE username = ?", user.Username)
+func (a authRepository) LoginRepository(user userdomain.User) (string, string, error) {
+	var data userdomain.User
+	res := a.db.Raw("SELECT email, password FROM users WHERE username = ?", user.Username)
 	rows, _ := res.Rows()
 	for rows.Next() {
-		rows.Scan(&password)
+		rows.Scan(&data.Email, &data.Password)
 	}
-	if password == "" {
-		return "", errors.New("email-not-found")
+	if data.Password == "" {
+		return "", "", errors.New("email-not-found")
 	}
-	return password, nil
+	return data.Email, data.Password, nil
 }
 
 func NewAuthRepository(db *gorm.DB) domain.AuthRepository {

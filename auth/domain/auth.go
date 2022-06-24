@@ -7,5 +7,5 @@ type AuthService interface {
 }
 
 type AuthRepository interface {
-	LoginRepository(user domain.User) (string, error)
+	LoginRepository(user domain.User) (string, string, error)
 }
