@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
 	"six/middleware"
 	"six/user/domain"
+	util "six/utils"
 )
 
 type UserHandler struct {
@@ -16,33 +16,29 @@ func NewUserHandler(r *mux.Router) {
 	handler := UserHandler{
 		r: r,
 	}
-	r.Use(middleware.Authori)
+	r.Use(middleware.Authori())
 	r.HandleFunc("/user", handler.GetUser)
-	r.HandleFunc("/user/:id", handler.GetUser)
+	r.HandleFunc("/user/{id}", handler.GetUserById)
 }
 
-func (h UserHandler) GetUser(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Add("Content-Type", "application/json")
-	marshal, _ := json.Marshal(map[string][]domain.User{
-		"data": {
-			{
-				ID:       1,
-				Username: "bebek",
-				Email:    "bebek@bebek.com",
-			},
-		},
-	})
-	writer.Write(marshal)
-}
-
-func (h UserHandler) GetUserById(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Add("Content-Type", "application/json")
-	marshal, _ := json.Marshal(map[string]domain.User{
-		"data": {
+func (h UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	response := []domain.User{
+		{
 			ID:       1,
 			Username: "bebek",
 			Email:    "bebek@bebek.com",
 		},
-	})
-	writer.Write(marshal)
+	}
+	w.Write(util.Response(response, nil))
+}
+
+func (h UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	response := domain.User{
+		ID:       1,
+		Username: "bebek",
+		Email:    "bebek@bebek.com",
+	}
+	w.Write(util.Response(response, nil))
 }

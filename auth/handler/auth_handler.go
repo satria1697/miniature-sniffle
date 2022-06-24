@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
 	"net/http"
+	util "six/utils"
 )
 
 type AuthHandler struct {
@@ -19,16 +19,17 @@ func NewAuthHandler(r *mux.Router) {
 }
 
 func (h AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("%s\n", r.Method)
 	if r.Method == "POST" {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{})
-		fmt.Printf("%v\n", token.Raw)
 		tokenString, err := token.SignedString([]byte("inistringsecretkakak"))
 		w.Header().Add("Content-Type", "application/json")
-
 		if err != nil {
-			fmt.Fprintf(w, "%v", err)
+			w.WriteHeader(http.StatusForbidden)
+			w.Write(util.Response(nil, err))
 		}
-		fmt.Fprintf(w, "%v", tokenString)
+		response := map[string]string{
+			"token": tokenString,
+		}
+		w.Write(util.Response(response, nil))
 	}
 }

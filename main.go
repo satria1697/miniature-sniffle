@@ -2,16 +2,25 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	handler2 "six/auth/handler"
+	"six/database"
 	"six/user/handler"
+	util "six/utils"
 	"time"
 )
 
 func main() {
+	config := util.InitConfig()
+	_, err := database.InitDatabase(config)
+	if err != nil {
+		log.Fatalf("database err: %v\n", err)
+	}
+
 	r := mux.NewRouter()
-	handler.NewUserHandler(r)
 	handler2.NewAuthHandler(r)
+	handler.NewUserHandler(r)
 
 	srv := &http.Server{
 		Handler: r,
@@ -20,5 +29,8 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	srv.ListenAndServe()
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatalf("run err: %v\n", err)
+	}
 }
