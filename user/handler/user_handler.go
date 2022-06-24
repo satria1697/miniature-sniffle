@@ -9,12 +9,14 @@ import (
 )
 
 type UserHandler struct {
-	r *mux.Router
+	r           *mux.Router
+	userService domain.UserService
 }
 
-func NewUserHandler(r *mux.Router) {
+func NewUserHandler(r *mux.Router, userService domain.UserService) {
 	handler := UserHandler{
-		r: r,
+		r:           r,
+		userService: userService,
 	}
 	s := r.PathPrefix("/api").Subrouter()
 	s.Use(middleware.Authori())
@@ -36,10 +38,10 @@ func (h UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 func (h UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	response := domain.User{
-		ID:       1,
-		Username: "bebek",
-		Email:    "bebek@bebek.com",
+	response, err := h.userService.GetUserById("2")
+	if err != nil {
+		w.Write(util.Response(nil, err))
+		return
 	}
 	w.Write(util.Response(response, nil))
 }

@@ -3,10 +3,16 @@ package util
 import "encoding/json"
 
 func Response(data any, err error) []byte {
-	jsonData := map[string]any{
+	response := map[string]any{
 		"data":  data,
-		"error": err,
+		"error": nil,
 	}
-	marshal, _ := json.Marshal(jsonData)
+	if err != nil {
+		response = map[string]any{
+			"data":  data,
+			"error": err.Error(),
+		}
+	}
+	marshal, _ := json.Marshal(response)
 	return marshal
 }

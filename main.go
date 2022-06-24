@@ -6,13 +6,15 @@ import (
 	"net/http"
 	handler2 "six/auth/handler"
 	"six/user/handler"
+	"six/user/service"
 	"time"
 )
 
 func main() {
 	r := mux.NewRouter()
 	handler2.NewAuthHandler(r)
-	handler.NewUserHandler(r)
+	userService := service.NewUserService()
+	handler.NewUserHandler(r, userService)
 
 	srv := &http.Server{
 		Handler: r,
