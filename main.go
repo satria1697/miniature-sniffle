@@ -5,19 +5,11 @@ import (
 	"log"
 	"net/http"
 	handler2 "six/auth/handler"
-	"six/database"
 	"six/user/handler"
-	util "six/utils"
 	"time"
 )
 
 func main() {
-	config := util.InitConfig()
-	_, err := database.InitDatabase(config)
-	if err != nil {
-		log.Fatalf("database err: %v\n", err)
-	}
-
 	r := mux.NewRouter()
 	handler2.NewAuthHandler(r)
 	handler.NewUserHandler(r)
@@ -29,7 +21,7 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	err = srv.ListenAndServe()
+	err := srv.ListenAndServe()
 	if err != nil {
 		log.Fatalf("run err: %v\n", err)
 	}

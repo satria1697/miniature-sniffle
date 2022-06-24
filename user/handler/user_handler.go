@@ -16,9 +16,10 @@ func NewUserHandler(r *mux.Router) {
 	handler := UserHandler{
 		r: r,
 	}
-	r.Use(middleware.Authori())
-	r.HandleFunc("/user", handler.GetUser)
-	r.HandleFunc("/user/{id}", handler.GetUserById)
+	s := r.PathPrefix("/api").Subrouter()
+	s.Use(middleware.Authori())
+	s.HandleFunc("/user", handler.GetUser)
+	s.HandleFunc("/user/{id}", handler.GetUserById)
 }
 
 func (h UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
