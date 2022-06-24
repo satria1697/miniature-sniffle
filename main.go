@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"net/http"
+	handler2 "six/auth/handler"
 	"six/user/handler"
 	"time"
 )
@@ -10,6 +11,7 @@ import (
 func main() {
 	r := mux.NewRouter()
 	handler.NewUserHandler(r)
+	handler2.NewAuthHandler(r)
 
 	srv := &http.Server{
 		Handler: r,
